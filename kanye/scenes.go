@@ -6,14 +6,24 @@ import (
 
 type Scene interface {
 	Update()
+	Close()
 }
 
 type BaseScene struct {
 	entities []*Entity
 }
 
+func Entities(scene *BaseScene) []*Entity {
+	return scene.entities
+}
+
 func (scene *BaseScene) Entities() []*Entity {
 	return scene.entities
+}
+
+type SceneDesc struct {
+	Name string
+	Scene Scene
 }
 
 type SceneManager struct {
@@ -21,20 +31,20 @@ type SceneManager struct {
 	currentScene string
 }
 
-func NewSceneManager() SceneManager {
-	return SceneManager{
+func NewSceneManager() *SceneManager {
+	return &SceneManager{
 		scenes: make(map[string]Scene),
 	}
 }
 
-func (sm *SceneManager) AddScene(name string, scene Scene) bool {
-	if _, found := sm.scenes[name]; found {
-		return false
+func (sm *SceneManager) LoadScenes(scenesDesc []SceneDesc) {
+	for _, desc := range scenesDesc {
+		if _, found := sm.scenes[desc.Name]; found {
+			panic(fmt.Sprintf("[scenes] scene %s already added", desc.Name))
+		}
+
+		sm.scenes[desc.Name] = desc.Scene
 	}
-
-	sm.scenes[name] = scene
-
-	return true;
 }
 
 func (sm *SceneManager) SetScene(newScene string) bool {
@@ -60,4 +70,10 @@ func (sm *SceneManager) Update() {
 	}
 
 	scene.Update()
+}
+
+func (sm *SceneManager) Close() {
+	for _, scene := range(sm.scenes) {
+		scene.Close()
+	}
 }
