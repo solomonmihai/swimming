@@ -45,13 +45,13 @@ func (am *AssetsManager) Texture(name string) rl.Texture2D {
 	return img
 }
 
-func (am *AssetsManager) Model(name string) rl.Model {
+func (am *AssetsManager) Model(name string) *rl.Model {
 	model, found := am.models[name]
 	if !found {
 		panic(fmt.Sprintf("[assets] model not found: %s", name))
 	}
 
-	return model
+	return &model
 }
 
 func (am *AssetsManager) LoadAssets(descriptions []AssetDesc) {

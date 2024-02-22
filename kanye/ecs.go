@@ -1,13 +1,23 @@
 package kanye
 
-import "reflect"
+import (
+	"reflect"
+)
 
 type Entity struct {
 	id int
 	components map[string]Component
 }
 
+func (entity *Entity) Id() int {
+	return entity.id
+}
+
 type Component interface{}
+
+type System interface {
+	Update(scene *BaseScene)
+}
 
 var entityCounter = 0
 
@@ -23,6 +33,9 @@ func NewEntity() *Entity {
 }
 
 // TODO: add multiple components at once
+// TODO: assign name to components, don't fetch them 
+// by type name, sometimes we need to have multiple types of
+// the same component on one entity (i.e. transforms)
 
 func (entity *Entity) AddComponent(component Component) bool {
 	componentName := name(component);
@@ -36,14 +49,24 @@ func (entity *Entity) AddComponent(component Component) bool {
 	return true
 }
 
-func (entity *Entity) GetComponent(component Component) (*Component, bool) {
+func (entity *Entity) GetComponent(component Component) *Component {
 	component, found := entity.components[name(component)]
 
 	if !found {
-		return nil, false
+		return nil
 	}
 
-	return &component, true
+	return &component
+}
+
+func GetComponent[T Component](entity *Entity) *T {
+  comp, found := entity.components[name(*new(T))]
+
+  if !found {
+    return nil
+  }
+
+  return comp.(*T)
 }
 
 func name(t interface{}) string {

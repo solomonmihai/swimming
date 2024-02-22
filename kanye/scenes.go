@@ -2,23 +2,60 @@ package kanye
 
 import (
 	"fmt"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type Scene interface {
 	Update()
+	UpdateSystems()
 	Close()
 }
 
 type BaseScene struct {
 	entities []*Entity
+	systems map[string]*System
+	Camera rl.Camera
 }
 
-func Entities(scene *BaseScene) []*Entity {
-	return scene.entities
+func (scene *BaseScene) Init() {
+	scene.systems = make(map[string]*System)	
 }
 
 func (scene *BaseScene) Entities() []*Entity {
 	return scene.entities
+}
+
+func (scene *BaseScene) AddEntity(entity *Entity) {
+	scene.entities = append(scene.entities, entity)
+}
+
+func (scene *BaseScene) AddSystem(system System) bool {
+	systemName := name(system);
+
+	if _, found := scene.systems[systemName]; found {
+		return false
+	}
+
+	scene.systems[systemName] = &system
+
+	return true
+}
+
+func (scene *BaseScene) GetSystem(system System) *System {
+	sys, found := scene.systems[name(system)]
+
+	if !found {
+		return nil
+	}
+
+	return sys
+}
+
+func (scene *BaseScene) UpdateSystems() {
+	for _, system := range scene.systems {
+		(*system).Update(scene)
+	}
 }
 
 type SceneDesc struct {
@@ -69,6 +106,7 @@ func (sm *SceneManager) Update() {
 		return
 	}
 
+	scene.UpdateSystems()
 	scene.Update()
 }
 
