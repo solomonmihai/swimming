@@ -15,7 +15,7 @@ type Scene interface {
 type BaseScene struct {
 	entities []*Entity
 	systems map[string]*System
-	Camera rl.Camera
+	Camera *rl.Camera
 }
 
 func (scene *BaseScene) Init() {
@@ -26,8 +26,10 @@ func (scene *BaseScene) Entities() []*Entity {
 	return scene.entities
 }
 
-func (scene *BaseScene) AddEntity(entity *Entity) {
-	scene.entities = append(scene.entities, entity)
+func (scene *BaseScene) AddEntity(entities ...*Entity) {
+	for _, ent := range entities {
+		scene.entities = append(scene.entities, ent)
+	}
 }
 
 func (scene *BaseScene) AddSystem(system System) bool {

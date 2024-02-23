@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"main/game"
 	"main/game/components"
 	"main/kanye"
 
@@ -8,11 +9,18 @@ import (
 )
 
 func NewPlayer() *kanye.Entity {
-	player := kanye.NewEntity()
+  player := kanye.NewEntity()
 
-	player.AddComponent(
-		components.NewTransform(rl.Vector3Zero(), rl.NewVector3(100, 100, 100)),
-	)
+  transform := components.DefaultTransform()
 
-	return player
+	model := components.NewModel(game.Game.Assets.Model("cube"))
+	model.Color = &rl.Green
+
+  player.AddComponent(
+    transform,
+		model,
+		components.NewPlayer(),
+  )
+
+  return player
 }

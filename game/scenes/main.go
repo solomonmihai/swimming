@@ -1,8 +1,8 @@
 package scenes
 
 import (
-	"main/game"
 	"main/game/components"
+	"main/game/entities"
 	"main/game/systems"
 	"main/kanye"
 
@@ -11,37 +11,30 @@ import (
 
 type MainScene struct {
   kanye.BaseScene
-
-  model rl.Model
-  texture rl.Texture2D
 }
-
-var t rl.Texture2D
 
 func NewMainScene() *MainScene {
   scene := &MainScene{}
   scene.Init()
 
   scene.AddSystem(&systems.ModelRenderer{})
+  scene.AddSystem(systems.NewCameraController(&scene.BaseScene))
 
-  player := kanye.NewEntity()
+  ground := entities.NewGround(rl.Vector3Zero())
+  groundTransform := (*ground.GetComponent(components.TRANSFORM_ID)).(*components.Transform)
+  groundTransform.Scale = rl.NewVector3(100, 0.3, 100)
 
-  player.AddComponent(components.NewModel(game.Game.Assets.Model("cube")))
-  player.AddComponent(components.DefaultTransform())
-
-  scene.AddEntity(player)
-
-  scene.Camera = rl.NewCamera3D(rl.NewVector3(50, 50, 50), rl.NewVector3(0, 10, 0), rl.NewVector3(0, 1, 0), 45, rl.CameraPerspective)
+  scene.AddEntity(
+    entities.NewPlayer(),
+    ground,
+  )
 
   rl.DisableCursor()
 
   return scene
 }
 
-func (scene *MainScene) Update() {
-  rl.UpdateCamera(&scene.Camera, rl.CameraFirstPerson)
-}
+func (scene *MainScene) Update() {}
 
-func (scene *MainScene) Close() { 
-}
+func (scene *MainScene) Close() {}
 

@@ -1,19 +1,23 @@
 package kanye
 
 import (
+	"fmt"
 	"reflect"
 )
 
 type Entity struct {
-	id int
-	components map[string]Component
+	id         int
+	components map[ComponentId]Component
 }
 
 func (entity *Entity) Id() int {
 	return entity.id
 }
 
-type Component interface{}
+type ComponentId int
+type Component interface{
+	Id() ComponentId
+}
 
 type System interface {
 	Update(scene *BaseScene)
@@ -23,8 +27,8 @@ var entityCounter = 0
 
 func NewEntity() *Entity {
 	entity := &Entity{
-		id: entityCounter,
-		components: make(map[string]Component),
+		id:         entityCounter,
+		components: make(map[ComponentId]Component),
 	}
 
 	entityCounter += 1
@@ -32,25 +36,18 @@ func NewEntity() *Entity {
 	return entity
 }
 
-// TODO: add multiple components at once
-// TODO: assign name to components, don't fetch them 
-// by type name, sometimes we need to have multiple types of
-// the same component on one entity (i.e. transforms)
+func (entity *Entity) AddComponent(components ...Component) {
+	for _, component := range components {
+		if _, found := entity.components[component.Id()]; found {
+			panic(fmt.Sprintf("[ecs] component id %d already added on entity %d", component.Id(), entity.Id()))
+		}
 
-func (entity *Entity) AddComponent(component Component) bool {
-	componentName := name(component);
-
-	if _, found := entity.components[componentName]; found {
-		return false
+		entity.components[component.Id()] = component
 	}
-
-	entity.components[componentName] = component
-
-	return true
 }
 
-func (entity *Entity) GetComponent(component Component) *Component {
-	component, found := entity.components[name(component)]
+func (entity *Entity) GetComponent(componentId ComponentId) *Component {
+	component, found := entity.components[componentId]
 
 	if !found {
 		return nil
@@ -59,14 +56,14 @@ func (entity *Entity) GetComponent(component Component) *Component {
 	return &component
 }
 
-func GetComponent[T Component](entity *Entity) *T {
-  comp, found := entity.components[name(*new(T))]
+func (entity Entity) HasComponents(componentIds ...ComponentId) bool {
+	for _, componentId := range componentIds {
+		if entity.GetComponent(ComponentId(componentId)) == nil {
+			return false
+		}
+	}
 
-  if !found {
-    return nil
-  }
-
-  return comp.(*T)
+	return true
 }
 
 func name(t interface{}) string {
