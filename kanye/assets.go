@@ -11,13 +11,13 @@ import (
 type AssetType string
 
 const (
-	TEXTURE AssetType = "texture"
-	MODEL AssetType = "model"
-	SOUND AssetType = "sound"
+	ASSET_TEXTURE AssetType = "texture"
+	ASSET_MODEL AssetType = "model"
+	ASSET_SOUND AssetType = "sound"
 )
 
 type AssetDesc struct {
-	Path, Name string
+	Name, Path string
 	AssetType  AssetType
 }
 
@@ -35,14 +35,14 @@ func NewAssetsManager() *AssetsManager {
 	}
 }
 
-func (am *AssetsManager) Texture(name string) rl.Texture2D {
+func (am *AssetsManager) Texture(name string) *rl.Texture2D {
 	img, found := am.textures[name]
 
 	if !found {
 		panic(fmt.Sprintf("[assets] texture not found: %s", name))
 	}
 
-	return img
+	return &img
 }
 
 func (am *AssetsManager) Model(name string) *rl.Model {
@@ -61,13 +61,13 @@ func (am *AssetsManager) LoadAssets(descriptions []AssetDesc) {
 		checkAssetExists(desc)
 
 		switch desc.AssetType {
-		case TEXTURE:
+		case ASSET_TEXTURE:
 			am.textures[desc.Name] = am.loadTexture(desc)
 			break
-		case MODEL:
+		case ASSET_MODEL:
 			am.models[desc.Name] = am.loadModel(desc)
 			break
-		case SOUND:
+		case ASSET_SOUND:
 			am.sounds[desc.Name] = am.loadSound(desc)
 			break
 		}

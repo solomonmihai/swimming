@@ -14,12 +14,12 @@ type Scene interface {
 
 type BaseScene struct {
 	entities []*Entity
-	systems map[string]*System
+	systems map[string]System
 	Camera *rl.Camera
 }
 
 func (scene *BaseScene) Init() {
-	scene.systems = make(map[string]*System)	
+	scene.systems = make(map[string]System)
 }
 
 func (scene *BaseScene) Entities() []*Entity {
@@ -32,14 +32,22 @@ func (scene *BaseScene) AddEntity(entities ...*Entity) {
 	}
 }
 
-func (scene *BaseScene) AddSystem(system System) bool {
-	systemName := name(system);
-
-	if _, found := scene.systems[systemName]; found {
-		return false
+func (scene *BaseScene) AddEntities(entities []*Entity) {
+	for _, ent := range entities {
+		scene.entities = append(scene.entities, ent)
 	}
+}
 
-	scene.systems[systemName] = &system
+func (scene *BaseScene) AddSystem(systems ...System) bool {
+	for _, system := range systems {
+		systemName := name(system);
+
+		if _, found := scene.systems[systemName]; found {
+			return false
+		}
+
+		scene.systems[systemName] = system
+	}
 
 	return true
 }
@@ -51,12 +59,12 @@ func (scene *BaseScene) GetSystem(system System) *System {
 		return nil
 	}
 
-	return sys
+	return &sys
 }
 
 func (scene *BaseScene) UpdateSystems() {
 	for _, system := range scene.systems {
-		(*system).Update(scene)
+		system.Update(scene)
 	}
 }
 

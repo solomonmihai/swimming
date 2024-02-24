@@ -9,18 +9,18 @@ import (
 )
 
 func NewPlayer() *kanye.Entity {
-  player := kanye.NewEntity()
+	player := kanye.NewEntity()
 
-  transform := components.DefaultTransform()
+	transform := components.DefaultTransform()
 
 	model := components.NewModel(game.Game.Assets.Model("cube"))
-	model.Color = &rl.Green
+	model.Color = &rl.White
 
-  player.AddComponent(
-    transform,
+	player.AddComponent(
+		transform,
 		model,
 		components.NewPlayer(),
-  )
+	)
 
-  return player
+	return player
 }

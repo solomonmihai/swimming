@@ -22,16 +22,20 @@ type Component interface{
 type System interface {
 	Update(scene *BaseScene)
 }
+type BaseSystem struct{}
 
-var entityCounter = 0
+var entityCount = 0
+
+func EntityCount() int {
+	return entityCount
+}
 
 func NewEntity() *Entity {
 	entity := &Entity{
-		id:         entityCounter,
+		id:         entityCount,
 		components: make(map[ComponentId]Component),
 	}
-
-	entityCounter += 1
+entityCount += 1
 
 	return entity
 }
@@ -56,14 +60,32 @@ func (entity *Entity) GetComponent(componentId ComponentId) *Component {
 	return &component
 }
 
-func (entity Entity) HasComponents(componentIds ...ComponentId) bool {
+func (entity Entity) HasComponent(componentId ComponentId) bool {
+	if entity.GetComponent(componentId) == nil {
+		return false
+	}
+
+	return true
+}
+
+func (entity Entity) HasComponents(componentIds []ComponentId) bool {
 	for _, componentId := range componentIds {
-		if entity.GetComponent(ComponentId(componentId)) == nil {
+		if !entity.HasComponent(componentId) {
 			return false
 		}
 	}
 
 	return true
+}
+
+func (system *BaseSystem) IterateEntities(scene *BaseScene, f func(*Entity), requiredComponents ...ComponentId, ) {
+	for _, ent := range scene.Entities() {
+		if !ent.HasComponents(requiredComponents) {
+			continue
+		}
+
+		f(ent)
+	}
 }
 
 func name(t interface{}) string {

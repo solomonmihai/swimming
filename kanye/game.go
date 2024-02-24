@@ -2,7 +2,7 @@ package kanye
 
 import (
 	"fmt"
- 
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -24,8 +24,8 @@ func NewGame(title string) *Game {
 
 func (game *Game) Init(width int, height int, fps int) {
 	rl.SetTraceLogLevel(rl.LogError)
+	rl.SetConfigFlags(rl.FlagVsyncHint)
 	rl.InitWindow(int32(width), int32(height), game.title)
-	rl.SetTargetFPS(0)
 }
 
 func (game *Game) Start() {

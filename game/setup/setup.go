@@ -12,16 +12,11 @@ func Setup() {
 	game.Game.Init(800, 600, 60)
 
 	game.Game.Assets.LoadAssets([]kanye.AssetDesc{
-		{
-			Name:      "cube",
-			Path:      "./assets/cube.obj",
-			AssetType: kanye.MODEL,
-		},
-		{
-			Name:      "test",
-			Path:      "./assets/test.png",
-			AssetType: kanye.TEXTURE,
-		},
+		{ "cube", "./assets/cube.obj", kanye.ASSET_MODEL, },
+		{ "test", "./assets/test.png", kanye.ASSET_TEXTURE, },
+
+		{ "tree", "./assets/models/tree/tree.obj", kanye.ASSET_MODEL, },
+		{ "treeTexture", "./assets/models/tree/texture.png", kanye.ASSET_TEXTURE, },
 	})
 
 	game.Game.Scenes.LoadScenes([]kanye.SceneDesc{
