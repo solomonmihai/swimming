@@ -19,8 +19,8 @@ func NewMainScene() *MainScene {
   scene.Init()
 
   scene.AddSystem(
-    &systems.PlayerController{},
     systems.NewCameraController(&scene.BaseScene),
+    &systems.PlayerController{},
 
     &systems.ModelRenderer{},
     systems.NewDebugSystem(),
